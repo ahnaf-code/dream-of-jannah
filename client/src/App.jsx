@@ -226,11 +226,11 @@ export default function App() {
 
   if (loading && kids.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-jannah-cream text-indigo-950 font-bubble pb-20">
+      <div className="flex flex-col items-center justify-center min-h-screen starry-bg text-white font-bubble pb-20">
         <div className="text-4xl animate-bounce">🌟</div>
-        <h2 className="text-xl font-bold mt-4">Loading Jannah Skies...</h2>
+        <h2 className="text-xl font-bold mt-4 glow-text">Loading Jannah Skies...</h2>
         {/* Developer Footer - Fixed at bottom */}
-        <footer className="fixed bottom-0 left-0 right-0 text-center py-2 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-2 border-jannah-gold z-30">
+        <footer className="fixed bottom-0 left-0 right-0 text-center py-2 bg-gradient-to-r from-jannah-dark-bg via-jannah-dark-card to-jannah-dark-bg border-t-2 border-jannah-gold z-30">
           <div className="text-xs text-white font-bubble">
             <div className="flex items-center justify-center gap-2">
               <span className="text-jannah-gold">✨</span>
@@ -247,15 +247,15 @@ export default function App() {
   // Password gate - must authenticate before accessing the app
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-jannah-lavender-light to-jannah-cream flex flex-col items-center justify-center p-4 pb-20">
-        <div className="bubble-card p-8 bg-white max-w-md w-full text-center">
+      <div className="min-h-screen starry-bg flex flex-col items-center justify-center p-4 pb-20">
+        <div className="bubble-card p-8 max-w-md w-full text-center">
           <div className="text-5xl mb-4">🔐</div>
-          <h2 className="text-2xl font-bold text-indigo-950 mb-2">Dream of Jannah</h2>
-          <p className="text-slate-500 text-sm mb-6">Enter password to access</p>
+          <h2 className="text-2xl font-bold text-white mb-2 glow-text">Dream of Jannah</h2>
+          <p className="text-jannah-lavender text-sm mb-6">Enter password to access</p>
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             {passwordError && (
-              <div className="bg-orange-50 border-2 border-orange-200 text-orange-700 px-4 py-2 rounded-xl text-sm font-semibold">
+              <div className="bg-red-900/30 border-2 border-red-500/50 text-red-300 px-4 py-2 rounded-xl text-sm font-semibold">
                 {passwordError}
               </div>
             )}
@@ -264,7 +264,7 @@ export default function App() {
               placeholder="Enter password..."
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl border-2 border-jannah-lavender focus:outline-none focus:ring-4 focus:ring-jannah-lavender-light text-center text-lg font-bubble"
+              className="w-full px-4 py-3 rounded-2xl border-2 border-jannah-dark-border bg-jannah-dark-bg text-white placeholder-jannah-lavender/50 focus:outline-none focus:ring-4 focus:ring-jannah-periwinkle/30 text-center text-lg font-bubble"
               autoFocus
             />
             <button type="submit" className="w-full bubble-btn-sky text-sm">
@@ -273,7 +273,7 @@ export default function App() {
           </form>
         </div>
         {/* Developer Footer - Fixed at bottom */}
-        <footer className="fixed bottom-0 left-0 right-0 text-center py-2 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-2 border-jannah-gold z-30">
+        <footer className="fixed bottom-0 left-0 right-0 text-center py-2 bg-gradient-to-r from-jannah-dark-bg via-jannah-dark-card to-jannah-dark-bg border-t-2 border-jannah-gold z-30">
           <div className="text-xs text-white font-bubble">
             <div className="flex items-center justify-center gap-2">
               <span className="text-jannah-gold">✨</span>
@@ -290,7 +290,7 @@ export default function App() {
   // If no kid profile is selected yet, show the beautiful Kid Selector dashboard
   if (!activeKid) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-jannah-lavender-light to-jannah-cream pb-32">
+      <div className="min-h-screen starry-bg pb-32">
         <KidSelector 
           kids={kids} 
           onSelectKid={(kid) => {
@@ -300,7 +300,7 @@ export default function App() {
           onAddKid={handleAddKid} 
         />
         {/* Developer Footer - Fixed at bottom */}
-        <footer className="fixed bottom-0 left-0 right-0 text-center py-2 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-2 border-jannah-gold z-30">
+        <footer className="fixed bottom-0 left-0 right-0 text-center py-2 bg-gradient-to-r from-jannah-dark-bg via-jannah-dark-card to-jannah-dark-bg border-t-2 border-jannah-gold z-30">
           <div className="text-xs text-white font-bubble">
             <div className="flex items-center justify-center gap-2">
               <span className="text-jannah-gold">✨</span>
@@ -315,7 +315,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-jannah-cream flex flex-col justify-between pb-24 md:pb-6">
+    <div className="min-h-screen starry-bg flex flex-col justify-between pb-24 md:pb-6">
       
       {/* Scrollable Main Area */}
       <main className="flex-grow pb-8">
@@ -351,7 +351,7 @@ export default function App() {
       </main>
 
       {/* Developer Copyright Footer - Fixed at bottom */}
-      <footer className="fixed bottom-20 left-0 right-0 text-center py-2 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-2 border-jannah-gold z-30">
+      <footer className="fixed bottom-20 left-0 right-0 text-center py-2 bg-gradient-to-r from-jannah-dark-bg via-jannah-dark-card to-jannah-dark-bg border-t-2 border-jannah-gold z-30">
         <div className="text-xs text-white font-bubble">
           <div className="flex items-center justify-center gap-2">
             <span className="text-jannah-gold">✨</span>
@@ -363,17 +363,17 @@ export default function App() {
       </footer>
 
       {/* Floating Bottom Bubbly Navigation Bar */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 border-4 border-jannah-lavender-dark rounded-full shadow-2xl backdrop-blur-md px-6 py-3 flex items-center justify-between gap-6 max-w-lg w-[90%] z-40 select-none">
+      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-jannah-dark-card/95 border-2 border-jannah-dark-border rounded-full shadow-[0_0_20px_rgba(147,156,255,0.3)] backdrop-blur-md px-6 py-3 flex items-center justify-between gap-6 max-w-lg w-[90%] z-40 select-none">
         
         <button
           onClick={() => setActiveTab('deeds')}
           className={`flex flex-col items-center justify-center transition-all ${
             activeTab === 'deeds' 
-              ? 'text-indigo-950 scale-110 font-bold' 
-              : 'text-slate-400 hover:text-slate-600'
+              ? 'text-jannah-gold scale-110 font-bold' 
+              : 'text-jannah-lavender/60 hover:text-jannah-lavender'
           }`}
         >
-          <Sparkles size={24} className={activeTab === 'deeds' ? 'text-indigo-950 animate-pulse' : ''} />
+          <Sparkles size={24} className={activeTab === 'deeds' ? 'text-jannah-gold animate-pulse' : ''} />
           <span className="text-[10px] mt-0.5">My Deeds</span>
         </button>
 
@@ -381,18 +381,18 @@ export default function App() {
           onClick={() => setActiveTab('leaderboard')}
           className={`flex flex-col items-center justify-center transition-all ${
             activeTab === 'leaderboard' 
-              ? 'text-indigo-950 scale-110 font-bold' 
-              : 'text-slate-400 hover:text-slate-600'
+              ? 'text-jannah-gold scale-110 font-bold' 
+              : 'text-jannah-lavender/60 hover:text-jannah-lavender'
           }`}
         >
-          <Trophy size={24} className={activeTab === 'leaderboard' ? 'text-amber-500' : ''} />
+          <Trophy size={24} className={activeTab === 'leaderboard' ? 'text-jannah-gold' : ''} />
           <span className="text-[10px] mt-0.5">Leaderboard</span>
         </button>
 
         {/* Quick character switcher */}
         <button
           onClick={() => setActiveKid(null)}
-          className="w-12 h-12 bg-indigo-950 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white hover:scale-110 active:scale-95 transition-all -translate-y-2"
+          className="w-12 h-12 bg-jannah-periwinkle text-indigo-950 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(147,156,255,0.5)] border-2 border-jannah-periwinkle-dark hover:scale-110 active:scale-95 transition-all -translate-y-2"
           title="Switch Kid Account"
         >
           <User size={22} />
@@ -402,11 +402,11 @@ export default function App() {
           onClick={() => setActiveTab('hall')}
           className={`flex flex-col items-center justify-center transition-all ${
             activeTab === 'hall' 
-              ? 'text-indigo-950 scale-110 font-bold' 
-              : 'text-slate-400 hover:text-slate-600'
+              ? 'text-jannah-gold scale-110 font-bold' 
+              : 'text-jannah-lavender/60 hover:text-jannah-lavender'
           }`}
         >
-          <Award size={24} className={activeTab === 'hall' ? 'text-purple-600' : ''} />
+          <Award size={24} className={activeTab === 'hall' ? 'text-jannah-gold' : ''} />
           <span className="text-[10px] mt-0.5">Hall of Fame</span>
         </button>
 
@@ -414,11 +414,11 @@ export default function App() {
           onClick={() => setActiveTab('admin')}
           className={`flex flex-col items-center justify-center transition-all ${
             activeTab === 'admin' 
-              ? 'text-indigo-950 scale-110 font-bold' 
-              : 'text-slate-400 hover:text-slate-600'
+              ? 'text-jannah-mint scale-110 font-bold' 
+              : 'text-jannah-lavender/60 hover:text-jannah-lavender'
           }`}
         >
-          <Settings size={24} className={activeTab === 'admin' ? 'text-slate-800' : ''} />
+          <Settings size={24} className={activeTab === 'admin' ? 'text-jannah-mint' : ''} />
           <span className="text-[10px] mt-0.5">Ahnaf</span>
         </button>
 
