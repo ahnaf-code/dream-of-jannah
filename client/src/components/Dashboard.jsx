@@ -16,10 +16,10 @@ export default function Dashboard({ activeKid, tasks, completions, onToggleTask,
 
   // Filter tasks based on selected date
   const filteredTasks = tasks.filter(task => {
-    // If task has no assigned_date (null), it's a recurring daily task - show on all dates
     if (task.assigned_date === null) return true;
-    // Otherwise, only show if it matches the selected date
-    return task.assigned_date === selectedDate;
+    // Normalize the assigned_date to YYYY-MM-DD format for comparison
+    const taskDate = task.assigned_date.split('T')[0];
+    return taskDate === selectedDate;
   });
 
   useEffect(() => {

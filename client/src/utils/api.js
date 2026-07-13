@@ -112,40 +112,32 @@ export async function fetchAssignments() {
   return res.json();
 }
 
-export async function fetchTasksForKid(kidId, date) {
+export async function fetchTasksForKid(kidId) {
   if (isSupabase) {
     try {
-      // Fetch all assignments
       const { data: assignments, error } = await supabase
         .from('task_assignments')
         .select('*')
         .order('created_at', { ascending: false });
       
-      // If table doesn't exist, return empty array
       if (error || !assignments) {
         return [];
       }
 
-      // Filter assignments that match this kid and date
       const matchingAssignments = assignments.filter(a => {
-        const matchesKid = a.kid_id === null || a.kid_id === kidId;
-        const matchesDate = a.assigned_date === null || a.assigned_date === date;
-        return matchesKid && matchesDate;
+        return a.kid_id === null || a.kid_id === kidId;
       });
 
-      // If no assignments found, return empty array (no tasks to show)
       if (matchingAssignments.length === 0) {
         return [];
       }
 
-      // Get unique task IDs from matching assignments
       const taskIds = [...new Set(matchingAssignments.map(a => a.task_id))];
       
       if (taskIds.length === 0) {
         return [];
       }
 
-      // Fetch the actual tasks
       const { data: tasks } = await supabase
         .from('tasks')
         .select('*')
@@ -153,7 +145,6 @@ export async function fetchTasksForKid(kidId, date) {
       
       if (!tasks) return [];
 
-      // Return tasks with assignment metadata
       return tasks.map(task => {
         const assignment = matchingAssignments.find(a => a.task_id === task.id);
         return { 
@@ -164,11 +155,10 @@ export async function fetchTasksForKid(kidId, date) {
         };
       });
     } catch (err) {
-      // If anything fails, return empty array
       return [];
     }
   }
-  const res = await fetch(`${LOCAL_API}/tasks?kidId=${kidId}&date=${date}`);
+  const res = await fetch(`${LOCAL_API}/tasks?kidId=${kidId}`);
   if (!res.ok) throw new Error('Failed to fetch tasks');
   return res.json();
 }

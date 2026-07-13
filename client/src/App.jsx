@@ -91,8 +91,7 @@ export default function App() {
     if (activeKid) {
       const todayStr = getLocalDateString();
       
-      // Load tasks assigned to this kid
-      fetchTasksForKid(activeKid.id, todayStr)
+      fetchTasksForKid(activeKid.id)
         .then(data => setKidTasks(data))
         .catch(err => console.error('Error loading kid tasks:', err));
       
@@ -160,10 +159,8 @@ export default function App() {
     try {
       const newAssignment = await addAssignment(taskId, kidId, assignedDate);
       setAssignments(prev => [...prev, newAssignment]);
-      // Refresh kid tasks if active
       if (activeKid) {
-        const todayStr = getLocalDateString();
-        const updatedTasks = await fetchTasksForKid(activeKid.id, todayStr);
+        const updatedTasks = await fetchTasksForKid(activeKid.id);
         setKidTasks(updatedTasks);
       }
     } catch (err) {
@@ -171,15 +168,12 @@ export default function App() {
     }
   };
 
-  // Handles deleting an assignment
   const handleDeleteAssignment = async (id) => {
     try {
       await deleteAssignment(id);
       setAssignments(prev => prev.filter(a => a.id !== id));
-      // Refresh kid tasks if active
       if (activeKid) {
-        const todayStr = getLocalDateString();
-        const updatedTasks = await fetchTasksForKid(activeKid.id, todayStr);
+        const updatedTasks = await fetchTasksForKid(activeKid.id);
         setKidTasks(updatedTasks);
       }
     } catch (err) {
