@@ -90,6 +90,76 @@ export async function deleteTask(id) {
 }
 
 // =====================================================
+// TASK ASSIGNMENTS
+// =====================================================
+export async function fetchAssignments() {
+  if (isSupabase) {
+    const { data, error } = await supabase
+      .from('task_assignments')
+      .select('*, tasks(title, points)')
+      .order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
+    return data;
+  }
+  const res = await fetch(`${LOCAL_API}/assignments`);
+  if (!res.ok) throw new Error('Failed to fetch assignments');
+  return res.json();
+}
+
+export async function fetchTasksForKid(kidId, date) {
+  if (isSupabase) {
+    // Get tasks assigned to this specific kid for this specific date
+    // OR assigned to this kid for all dates (recurring)
+    // OR assigned to all kids for this specific date
+    // OR assigned to all kids for all dates (recurring for everyone)
+    const { data, error } = await supabase
+      .from('task_assignments')
+      .select('*, tasks(id, title, points)')
+      .or(`and(kid_id.eq.${kidId},assigned_date.eq.${date}),and(kid_id.eq.${kidId},assigned_date.is.null),and(kid_id.is.null,assigned_date.eq.${date}),and(kid_id.is.null,assigned_date.is.null)`)
+      .order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
+    return data.map(a => ({ ...a.tasks, assignment_id: a.id, assigned_kid_id: a.kid_id, assigned_date: a.assigned_date }));
+  }
+  const res = await fetch(`${LOCAL_API}/tasks?kidId=${kidId}&date=${date}`);
+  if (!res.ok) throw new Error('Failed to fetch tasks');
+  return res.json();
+}
+
+export async function addAssignment(taskId, kidId, assignedDate) {
+  if (isSupabase) {
+    const { data, error } = await supabase
+      .from('task_assignments')
+      .insert({ 
+        task_id: taskId, 
+        kid_id: kidId || null, // null means all kids
+        assigned_date: assignedDate || null // null means all dates (recurring)
+      })
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
+  }
+  const res = await fetch(`${LOCAL_API}/assignments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ taskId, kidId, assignedDate })
+  });
+  if (!res.ok) throw new Error('Failed to add assignment');
+  return res.json();
+}
+
+export async function deleteAssignment(id) {
+  if (isSupabase) {
+    const { error } = await supabase.from('task_assignments').delete().eq('id', id);
+    if (error) throw new Error(error.message);
+    return { success: true };
+  }
+  const res = await fetch(`${LOCAL_API}/assignments/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Failed to delete assignment');
+  return res.json();
+}
+
+// =====================================================
 // TASK COMPLETIONS
 // =====================================================
 export async function fetchCompletions(kidId, date) {

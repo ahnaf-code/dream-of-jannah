@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { AVATARS } from '../utils/avatars';
-import { Settings, ShieldCheck, UserPlus, Trash2, ListPlus, RotateCcw, AlertTriangle } from 'lucide-react';
+import { Settings, ShieldCheck, UserPlus, Trash2, ListPlus, RotateCcw, AlertTriangle, Calendar, Users } from 'lucide-react';
 
-export default function AdminPanel({ kids, tasks, onAddKid, onDeleteKid, onAddTask, onDeleteTask, onDeclareChampion }) {
+export default function AdminPanel({ 
+  kids, tasks, assignments,
+  onAddKid, onDeleteKid, onAddTask, onDeleteTask, 
+  onAddAssignment, onDeleteAssignment, onDeclareChampion 
+}) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [pin, setPin] = useState('');
   const [pinError, setPinError] = useState('');
@@ -14,6 +18,13 @@ export default function AdminPanel({ kids, tasks, onAddKid, onDeleteKid, onAddTa
   // Task addition state
   const [taskTitle, setTaskTitle] = useState('');
   const [taskPoints, setTaskPoints] = useState(10);
+
+  // Assignment state
+  const [selectedTaskId, setSelectedTaskId] = useState('');
+  const [selectedKidIds, setSelectedKidIds] = useState([]);
+  const [assignAllKids, setAssignAllKids] = useState(true);
+  const [assignDate, setAssignDate] = useState('');
+  const [assignAllDates, setAssignAllDates] = useState(true);
 
   // Declaration state
   const [selectedMonth, setSelectedMonth] = useState(() => {
@@ -47,6 +58,42 @@ export default function AdminPanel({ kids, tasks, onAddKid, onDeleteKid, onAddTa
     setTaskPoints(10);
   };
 
+  const handleCreateAssignment = (e) => {
+    e.preventDefault();
+    if (!selectedTaskId) {
+      alert('Please select a task!');
+      return;
+    }
+
+    const kidId = assignAllKids ? null : (selectedKidIds.length > 0 ? selectedKidIds[0] : null);
+    const assignedDate = assignAllDates ? null : (assignDate || null);
+
+    if (!assignAllKids && selectedKidIds.length === 0) {
+      alert('Please select at least one kid!');
+      return;
+    }
+
+    if (!assignAllDates && !assignDate) {
+      alert('Please select a date!');
+      return;
+    }
+
+    // If assigning to multiple specific kids, create multiple assignments
+    if (!assignAllKids && selectedKidIds.length > 1) {
+      selectedKidIds.forEach(kidId => {
+        onAddAssignment(parseInt(selectedTaskId), kidId, assignedDate);
+      });
+    } else {
+      onAddAssignment(parseInt(selectedTaskId), kidId, assignedDate);
+    }
+
+    // Reset form
+    setSelectedTaskId('');
+    setSelectedKidIds([]);
+    setAssignDate('');
+    alert('Task assigned successfully! ✨');
+  };
+
   const handleResetClick = () => {
     if (kids.length === 0) {
       alert('You need to add some kids first! 😊');
@@ -59,6 +106,14 @@ export default function AdminPanel({ kids, tasks, onAddKid, onDeleteKid, onAddTa
     await onDeclareChampion(selectedMonth);
     setShowResetConfirm(false);
     alert(`🎉 Success! Declared Champions for ${selectedMonth} and reset points for the new month! Check the Hall of Fame!`);
+  };
+
+  const toggleKidSelection = (kidId) => {
+    setSelectedKidIds(prev => 
+      prev.includes(kidId) 
+        ? prev.filter(id => id !== kidId)
+        : [...prev, kidId]
+    );
   };
 
   if (!isAdmin) {
@@ -110,7 +165,7 @@ export default function AdminPanel({ kids, tasks, onAddKid, onDeleteKid, onAddTa
           </div>
           <div>
             <h2 className="text-2xl font-bold">Ahnaf Dashboard</h2>
-            <p className="text-teal-200 text-xs">Manage kids, tasks, and monthly champions! 🌟</p>
+            <p className="text-teal-200 text-xs">Manage kids, tasks, and assignments! 🌟</p>
           </div>
         </div>
         <button
@@ -119,6 +174,146 @@ export default function AdminPanel({ kids, tasks, onAddKid, onDeleteKid, onAddTa
         >
           Lock Panel 🔒
         </button>
+      </div>
+
+      {/* Task Assignments Section - NEW */}
+      <div className="bubble-card p-6 bg-gradient-to-br from-purple-50 to-indigo-50 border-indigo-200">
+        <h3 className="text-xl font-bold text-indigo-950 mb-4 flex items-center gap-2">
+          <Calendar className="text-indigo-600" /> Task Assignments
+        </h3>
+        <p className="text-sm text-slate-600 mb-4">
+          Assign tasks to specific kids and dates. Leave options unchecked to make it apply to all kids/dates.
+        </p>
+
+        <form onSubmit={handleCreateAssignment} className="space-y-4 mb-6">
+          {/* Select Task */}
+          <div>
+            <label className="block text-sm font-bold text-indigo-950 mb-2">Select Task:</label>
+            <select
+              value={selectedTaskId}
+              onChange={(e) => setSelectedTaskId(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl border-2 border-indigo-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+            >
+              <option value="">-- Choose a task --</option>
+              {tasks.map(task => (
+                <option key={task.id} value={task.id}>
+                  {task.title} (+{task.points} ⭐)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Select Kids */}
+          <div>
+            <label className="block text-sm font-bold text-indigo-950 mb-2">Assign To:</label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={assignAllKids}
+                  onChange={(e) => {
+                    setAssignAllKids(e.target.checked);
+                    if (e.target.checked) setSelectedKidIds([]);
+                  }}
+                  className="w-4 h-4 accent-indigo-600"
+                />
+                <span className="text-sm font-semibold text-indigo-950">All Kids</span>
+              </label>
+              {!assignAllKids && (
+                <div className="ml-6 space-y-1 max-h-32 overflow-y-auto">
+                  {kids.map(kid => {
+                    const av = AVATARS.find(a => a.id === kid.avatar) || AVATARS[0];
+                    return (
+                      <label key={kid.id} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedKidIds.includes(kid.id)}
+                          onChange={() => toggleKidSelection(kid.id)}
+                          className="w-4 h-4 accent-indigo-600"
+                        />
+                        <span className="text-lg">{av.emoji}</span>
+                        <span className="text-sm font-semibold text-slate-700">{kid.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Select Date */}
+          <div>
+            <label className="block text-sm font-bold text-indigo-950 mb-2">Assign Date:</label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={assignAllDates}
+                  onChange={(e) => {
+                    setAssignAllDates(e.target.checked);
+                    if (e.target.checked) setAssignDate('');
+                  }}
+                  className="w-4 h-4 accent-indigo-600"
+                />
+                <span className="text-sm font-semibold text-indigo-950">All Dates (Recurring Daily)</span>
+              </label>
+              {!assignAllDates && (
+                <input
+                  type="date"
+                  value={assignDate}
+                  onChange={(e) => setAssignDate(e.target.value)}
+                  className="ml-6 px-3 py-1.5 rounded-xl border-2 border-indigo-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              )}
+            </div>
+          </div>
+
+          <button type="submit" className="w-full bubble-btn-periwinkle py-2 text-sm font-bold">
+            Assign Task ✨
+          </button>
+        </form>
+
+        {/* Existing Assignments */}
+        <div className="border-t border-indigo-200 pt-4">
+          <h4 className="text-sm font-bold text-indigo-950 mb-3">Current Assignments:</h4>
+          <div className="space-y-2 max-h-60 overflow-y-auto">
+            {assignments && assignments.length > 0 ? (
+              assignments.map(assignment => {
+                const task = tasks.find(t => t.id === assignment.task_id);
+                const kid = kids.find(k => k.id === assignment.kid_id);
+                const av = kid ? (AVATARS.find(a => a.id === kid.avatar) || AVATARS[0]) : null;
+                
+                return (
+                  <div key={assignment.id} className="flex items-center justify-between p-2.5 bg-white border border-indigo-100 rounded-xl">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-800 truncate">{task?.title || 'Unknown Task'}</p>
+                      <div className="flex gap-2 mt-1">
+                        <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">
+                          {kid ? `${av.emoji} ${kid.name}` : '👥 All Kids'}
+                        </span>
+                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-semibold">
+                          {assignment.assigned_date ? `📅 ${assignment.assigned_date}` : '🔄 Daily'}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (confirm('Remove this assignment?')) {
+                          onDeleteAssignment(assignment.id);
+                        }
+                      }}
+                      className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors ml-2"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-xs text-slate-400 italic">No assignments yet. Create one above!</p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Main Grid split into Kid management and Task management */}
@@ -201,7 +396,7 @@ export default function AdminPanel({ kids, tasks, onAddKid, onDeleteKid, onAddTa
         <div className="bubble-card p-6 bg-white flex flex-col justify-between">
           <div>
             <h3 className="text-xl font-bold text-indigo-950 mb-4 flex items-center gap-2">
-              <ListPlus className="text-indigo-600" /> Weekly Checklist Tasks
+              <ListPlus className="text-indigo-600" /> Create Tasks
             </h3>
 
             {/* List of current tasks with delete option */}

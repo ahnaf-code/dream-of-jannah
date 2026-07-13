@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   fetchKids, addKid, deleteKid, 
   fetchTasks, addTask, deleteTask, 
+  fetchAssignments, fetchTasksForKid, addAssignment, deleteAssignment,
   fetchCompletions, toggleCompletion, 
   fetchChampions, declareChampion 
 } from './utils/api';
@@ -17,6 +18,8 @@ import { Sparkles, Trophy, Award, Settings, User } from 'lucide-react';
 export default function App() {
   const [kids, setKids] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [kidTasks, setKidTasks] = useState([]);
   const [completions, setCompletions] = useState([]);
   const [champions, setChampions] = useState([]);
   
@@ -24,17 +27,19 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('deeds'); // 'deeds', 'leaderboard', 'hall', 'admin'
   const [loading, setLoading] = useState(true);
 
-  // Load baseline data (kids, tasks, champions)
+  // Load baseline data (kids, tasks, assignments, champions)
   const loadData = async () => {
     try {
       setLoading(true);
-      const [kidsData, tasksData, championsData] = await Promise.all([
+      const [kidsData, tasksData, assignmentsData, championsData] = await Promise.all([
         fetchKids(),
         fetchTasks(),
+        fetchAssignments(),
         fetchChampions()
       ]);
       setKids(kidsData);
       setTasks(tasksData);
+      setAssignments(assignmentsData);
       setChampions(championsData);
 
       // If activeKid was already selected, update their state with freshest data from db
@@ -57,10 +62,17 @@ export default function App() {
     loadData();
   }, []);
 
-  // Whenever the activeKid changes, load their completions for today
+  // Whenever the activeKid changes, load their tasks and completions for today
   useEffect(() => {
     if (activeKid) {
       const todayStr = new Date().toISOString().split('T')[0];
+      
+      // Load tasks assigned to this kid
+      fetchTasksForKid(activeKid.id, todayStr)
+        .then(data => setKidTasks(data))
+        .catch(err => console.error('Error loading kid tasks:', err));
+      
+      // Load completions for this kid
       fetchCompletions(activeKid.id, todayStr)
         .then(data => setCompletions(data))
         .catch(err => console.error('Error loading completions:', err));
@@ -113,6 +125,38 @@ export default function App() {
         const todayStr = new Date().toISOString().split('T')[0];
         const updatedCompletions = await fetchCompletions(activeKid.id, todayStr);
         setCompletions(updatedCompletions);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Handles adding an assignment
+  const handleAddAssignment = async (taskId, kidId, assignedDate) => {
+    try {
+      const newAssignment = await addAssignment(taskId, kidId, assignedDate);
+      setAssignments(prev => [...prev, newAssignment]);
+      // Refresh kid tasks if active
+      if (activeKid) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const updatedTasks = await fetchTasksForKid(activeKid.id, todayStr);
+        setKidTasks(updatedTasks);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Handles deleting an assignment
+  const handleDeleteAssignment = async (id) => {
+    try {
+      await deleteAssignment(id);
+      setAssignments(prev => prev.filter(a => a.id !== id));
+      // Refresh kid tasks if active
+      if (activeKid) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const updatedTasks = await fetchTasksForKid(activeKid.id, todayStr);
+        setKidTasks(updatedTasks);
       }
     } catch (err) {
       console.error(err);
@@ -189,7 +233,7 @@ export default function App() {
         {activeTab === 'deeds' && (
           <Dashboard 
             activeKid={activeKid} 
-            tasks={tasks} 
+            tasks={kidTasks} 
             completions={completions} 
             onToggleTask={handleToggleTask} 
             onLogOut={() => setActiveKid(null)} 
@@ -205,10 +249,13 @@ export default function App() {
           <AdminPanel 
             kids={kids}
             tasks={tasks}
+            assignments={assignments}
             onAddKid={handleAddKid}
             onDeleteKid={handleDeleteKid}
             onAddTask={handleAddTask}
             onDeleteTask={handleDeleteTask}
+            onAddAssignment={handleAddAssignment}
+            onDeleteAssignment={handleDeleteAssignment}
             onDeclareChampion={handleDeclareChampion}
           />
         )}
