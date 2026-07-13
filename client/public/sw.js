@@ -1,10 +1,7 @@
-const CACHE_NAME = 'jannah-v1';
+const CACHE_NAME = 'jannah-v2';
 const ASSETS = [
   '/',
   '/index.html',
-  '/src/main.jsx',
-  '/src/App.jsx',
-  '/src/index.css',
   '/manifest.json'
 ];
 
@@ -15,6 +12,7 @@ self.addEventListener('install', (e) => {
       return cache.addAll(ASSETS).catch(err => console.log('SW Cache error: ', err));
     })
   );
+  self.skipWaiting();
 });
 
 // Activate & remove old cache versions
@@ -30,21 +28,28 @@ self.addEventListener('activate', (e) => {
       );
     })
   );
+  self.clients.claim();
 });
 
-// Fetch cache-first or network-fallback
+// Network-first strategy: always try to get fresh content, fall back to cache if offline
 self.addEventListener('fetch', (e) => {
-  // Only cache GET requests
   if (e.request.method !== 'GET' || e.request.url.includes('/api/')) {
     return;
   }
   
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(e.request);
-    })
+    fetch(e.request)
+      .then((response) => {
+        if (response.status === 200) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, responseClone);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(e.request);
+      })
   );
 });
