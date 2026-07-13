@@ -53,7 +53,7 @@ export async function deleteKid(id) {
 export async function fetchTasks() {
   if (isSupabase) {
     const { data, error } = await supabase
-      .from('tasks').select('*').order('created_at', { ascending: true });
+      .from('tasks').select('*').order('created_at', { ascending: false });
     if (error) throw new Error(error.message);
     return data;
   }
@@ -92,14 +92,17 @@ export async function deleteTask(id) {
 // =====================================================
 // TASK COMPLETIONS
 // =====================================================
-export async function fetchCompletions(date) {
+export async function fetchCompletions(kidId, date) {
   if (isSupabase) {
     const { data, error } = await supabase
-      .from('task_completions').select('*').eq('completed_date', date);
+      .from('task_completions')
+      .select('*')
+      .eq('kid_id', kidId)
+      .eq('completed_date', date);
     if (error) throw new Error(error.message);
     return data;
   }
-  const res = await fetch(`${LOCAL_API}/completions?date=${date}`);
+  const res = await fetch(`${LOCAL_API}/completions?kidId=${kidId}&date=${date}`);
   if (!res.ok) throw new Error('Failed to fetch completions');
   return res.json();
 }

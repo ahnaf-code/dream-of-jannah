@@ -61,7 +61,7 @@ export default function App() {
   useEffect(() => {
     if (activeKid) {
       const todayStr = new Date().toISOString().split('T')[0];
-      fetchCompletions(todayStr)
+      fetchCompletions(activeKid.id, todayStr)
         .then(data => setCompletions(data))
         .catch(err => console.error('Error loading completions:', err));
     }
@@ -111,7 +111,7 @@ export default function App() {
       // Refresh completions
       if (activeKid) {
         const todayStr = new Date().toISOString().split('T')[0];
-        const updatedCompletions = await fetchCompletions(todayStr);
+        const updatedCompletions = await fetchCompletions(activeKid.id, todayStr);
         setCompletions(updatedCompletions);
       }
     } catch (err) {
@@ -215,7 +215,7 @@ export default function App() {
       </main>
 
       {/* Developer Copyright Footer */}
-      <footer className="text-center py-2 text-xs text-slate-400 font-bubble select-none">
+      <footer className="text-center py-3 mb-20 text-xs text-slate-400 font-bubble select-none">
         &copy; 2026 Mir Muhammad Azmain Ahnaf. Developed by <span className="font-bold text-slate-500">Mir Muhammad Azmain Ahnaf</span>
       </footer>
 

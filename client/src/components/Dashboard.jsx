@@ -159,7 +159,13 @@ export default function Dashboard({ activeKid, tasks, completions, onToggleTask,
 
       {/* Checklist Grid */}
       <div className="space-y-4">
-        {tasks.map((task) => {
+        {[...tasks].sort((a, b) => {
+          const aCompleted = completions.some(c => c.task_id === a.id && c.completed_date === selectedDate);
+          const bCompleted = completions.some(c => c.task_id === b.id && c.completed_date === selectedDate);
+          if (aCompleted && !bCompleted) return 1;
+          if (!aCompleted && bCompleted) return -1;
+          return 0;
+        }).map((task) => {
           const isCompleted = completions.some(c => c.task_id === task.id && c.completed_date === selectedDate);
           
           return (
