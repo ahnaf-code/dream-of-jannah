@@ -15,6 +15,14 @@ import AdminPanel from './components/AdminPanel';
 
 import { Sparkles, Trophy, Award, Settings, User } from 'lucide-react';
 
+// Helper function to get local date string in YYYY-MM-DD format
+const getLocalDateString = (date = new Date()) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export default function App() {
   const [kids, setKids] = useState([]);
   const [tasks, setTasks] = useState([]);
@@ -65,7 +73,7 @@ export default function App() {
   // Whenever the activeKid changes, load their tasks and completions for today
   useEffect(() => {
     if (activeKid) {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = getLocalDateString();
       
       // Load tasks assigned to this kid
       fetchTasksForKid(activeKid.id, todayStr)
@@ -122,7 +130,7 @@ export default function App() {
       setTasks(prev => prev.filter(t => t.id !== id));
       // Refresh completions
       if (activeKid) {
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = getLocalDateString();
         const updatedCompletions = await fetchCompletions(activeKid.id, todayStr);
         setCompletions(updatedCompletions);
       }
@@ -138,7 +146,7 @@ export default function App() {
       setAssignments(prev => [...prev, newAssignment]);
       // Refresh kid tasks if active
       if (activeKid) {
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = getLocalDateString();
         const updatedTasks = await fetchTasksForKid(activeKid.id, todayStr);
         setKidTasks(updatedTasks);
       }
@@ -154,7 +162,7 @@ export default function App() {
       setAssignments(prev => prev.filter(a => a.id !== id));
       // Refresh kid tasks if active
       if (activeKid) {
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = getLocalDateString();
         const updatedTasks = await fetchTasksForKid(activeKid.id, todayStr);
         setKidTasks(updatedTasks);
       }

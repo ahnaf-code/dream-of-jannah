@@ -4,8 +4,16 @@ import { getAvatar } from '../utils/avatars';
 import { Sparkles, Check, RefreshCw, ChevronLeft, Calendar } from 'lucide-react';
 
 export default function Dashboard({ activeKid, tasks, completions, onToggleTask, onLogOut }) {
+  // Helper function to get local date string in YYYY-MM-DD format
+  const getLocalDateString = (date = new Date()) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const [selectedDate, setSelectedDate] = useState(() => {
-    return new Date().toISOString().split('T')[0];
+    return getLocalDateString();
   });
   const [weekDays, setWeekDays] = useState([]);
 
@@ -17,8 +25,12 @@ export default function Dashboard({ activeKid, tasks, completions, onToggleTask,
     for (let i = -3; i <= 3; i++) {
       const d = new Date();
       d.setDate(today.getDate() + i);
+      // Format as YYYY-MM-DD using local date to avoid timezone issues
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
       days.push({
-        dateStr: d.toISOString().split('T')[0],
+        dateStr: `${year}-${month}-${day}`,
         dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
         dayNum: d.getDate(),
         isToday: i === 0
@@ -71,9 +83,11 @@ export default function Dashboard({ activeKid, tasks, completions, onToggleTask,
     }
   };
 
-  // Helper to format the display date
+  // Helper to format the display date (fixes timezone issue)
   const formatDisplayDate = (dateStr) => {
-    const d = new Date(dateStr);
+    // Parse as local date to avoid timezone shift
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const d = new Date(year, month - 1, day);
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'long' });
   };
 
