@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+}
+
+/* Custom rounded card styling to look like thick bubbly stickers */
+.bubble-card {
+  @apply bg-white border-4 border-jannah-lavender-dark rounded-3xl shadow-[4px_4px_0px_0px_#D8B4FE] transition-all duration-200 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_#D8B4FE];
+}
+
+/* Styled bubbly buttons */
+.bubble-btn-sky {
+  @apply bg-jannah-sky border-4 border-jannah-sky-dark text-indigo-950 font-bold px-6 py-3 rounded-full shadow-[4px_4px_0px_0px_#7DB0FF] hover:bg-jannah-sky-light hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#7DB0FF] transition-all;
+}
+
+.bubble-btn-mint {
+  @apply bg-jannah-mint border-4 border-jannah-mint-dark text-indigo-950 font-bold px-6 py-3 rounded-full shadow-[4px_4px_0px_0px_#8DF1E4] hover:bg-jannah-mint-light hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#8DF1E4] transition-all;
+}
+
+.bubble-btn-periwinkle {
+  @apply bg-jannah-periwinkle border-4 border-jannah-periwinkle-dark text-indigo-950 font-bold px-6 py-3 rounded-full shadow-[4px_4px_0px_0px_#939CFF] hover:bg-jannah-periwinkle-light hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#939CFF] transition-all;
+}
+
+.bubble-btn-gold {
+  @apply bg-jannah-gold border-4 border-jannah-gold-dark text-indigo-950 font-bold px-6 py-3 rounded-full shadow-[4px_4px_0px_0px_#F9F871] hover:bg-jannah-gold-light hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#F9F871] transition-all;
+}
+
+/* Custom scrollbars for beautiful rounded styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFFDF9;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E6E6FA;
+  border-radius: 999px;
+  border: 2px solid #FFFDF9;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D8B4FE;
+}
