@@ -210,19 +210,18 @@ export default function App() {
 
   if (loading && kids.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-jannah-cream text-indigo-950 font-bubble">
-        <div className="flex-grow flex flex-col items-center justify-center">
-          <div className="text-4xl animate-bounce">🌟</div>
-          <h2 className="text-xl font-bold mt-4">Loading Jannah Skies...</h2>
-        </div>
-        <footer className="text-center py-4 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-4 border-jannah-gold w-full">
-          <div className="text-sm text-white font-bubble">
-            <div className="flex items-center justify-center gap-2 mb-1">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-jannah-cream text-indigo-950 font-bubble pb-20">
+        <div className="text-4xl animate-bounce">🌟</div>
+        <h2 className="text-xl font-bold mt-4">Loading Jannah Skies...</h2>
+        {/* Developer Footer - Fixed at bottom */}
+        <footer className="fixed bottom-0 left-0 right-0 text-center py-2 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-2 border-jannah-gold z-30">
+          <div className="text-xs text-white font-bubble">
+            <div className="flex items-center justify-center gap-2">
               <span className="text-jannah-gold">✨</span>
               <span className="font-bold">Developed by Mir Muhammad Azmain Ahnaf</span>
               <span className="text-jannah-gold">✨</span>
             </div>
-            <div className="text-xs text-jannah-lavender">© 2026 Dream of Jannah</div>
+            <div className="text-[10px] text-jannah-lavender">© 2026 Dream of Jannah</div>
           </div>
         </footer>
       </div>
@@ -232,25 +231,24 @@ export default function App() {
   // If no kid profile is selected yet, show the beautiful Kid Selector dashboard
   if (!activeKid) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-jannah-lavender-light to-jannah-cream pb-12 flex flex-col">
-        <div className="flex-grow">
-          <KidSelector 
-            kids={kids} 
-            onSelectKid={(kid) => {
-              setActiveKid(kid);
-              setActiveTab('deeds');
-            }} 
-            onAddKid={handleAddKid} 
-          />
-        </div>
-        <footer className="text-center py-4 mt-8 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-4 border-jannah-gold">
-          <div className="text-sm text-white font-bubble">
-            <div className="flex items-center justify-center gap-2 mb-1">
+      <div className="min-h-screen bg-gradient-to-b from-jannah-lavender-light to-jannah-cream pb-32">
+        <KidSelector 
+          kids={kids} 
+          onSelectKid={(kid) => {
+            setActiveKid(kid);
+            setActiveTab('deeds');
+          }} 
+          onAddKid={handleAddKid} 
+        />
+        {/* Developer Footer - Fixed at bottom */}
+        <footer className="fixed bottom-0 left-0 right-0 text-center py-2 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-2 border-jannah-gold z-30">
+          <div className="text-xs text-white font-bubble">
+            <div className="flex items-center justify-center gap-2">
               <span className="text-jannah-gold">✨</span>
               <span className="font-bold">Developed by Mir Muhammad Azmain Ahnaf</span>
               <span className="text-jannah-gold">✨</span>
             </div>
-            <div className="text-xs text-jannah-lavender">© 2026 Dream of Jannah</div>
+            <div className="text-[10px] text-jannah-lavender">© 2026 Dream of Jannah</div>
           </div>
         </footer>
       </div>
@@ -293,19 +291,19 @@ export default function App() {
         )}
       </main>
 
-      {/* Developer Copyright Footer - Eye-catching design */}
-      <footer className="text-center py-4 mb-20 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-4 border-jannah-gold">
-        <div className="text-sm text-white font-bubble">
-          <div className="flex items-center justify-center gap-2 mb-1">
+      {/* Developer Copyright Footer - Fixed at bottom */}
+      <footer className="fixed bottom-20 left-0 right-0 text-center py-2 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-2 border-jannah-gold z-30">
+        <div className="text-xs text-white font-bubble">
+          <div className="flex items-center justify-center gap-2">
             <span className="text-jannah-gold">✨</span>
             <span className="font-bold">Developed by Mir Muhammad Azmain Ahnaf</span>
             <span className="text-jannah-gold">✨</span>
           </div>
-          <div className="text-xs text-jannah-lavender">© 2026 Dream of Jannah</div>
+          <div className="text-[10px] text-jannah-lavender">© 2026 Dream of Jannah</div>
         </div>
       </footer>
 
-      {/* Floating Bottom Bubbly Navigation Bar (Highly Kid-Friendly and Thumb-Optimized) */}
+      {/* Floating Bottom Bubbly Navigation Bar */}
       <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 border-4 border-jannah-lavender-dark rounded-full shadow-2xl backdrop-blur-md px-6 py-3 flex items-center justify-between gap-6 max-w-lg w-[90%] z-40 select-none">
         
         <button
