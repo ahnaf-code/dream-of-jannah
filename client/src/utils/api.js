@@ -115,19 +115,15 @@ export async function fetchAssignments() {
 export async function fetchTasksForKid(kidId, date) {
   if (isSupabase) {
     try {
-      // Try to fetch assignments first
+      // Fetch all assignments
       const { data: assignments, error } = await supabase
         .from('task_assignments')
         .select('*')
         .order('created_at', { ascending: false });
       
-      // If table doesn't exist or error, fall back to showing all tasks
+      // If table doesn't exist, return empty array
       if (error || !assignments) {
-        const { data: allTasks } = await supabase
-          .from('tasks')
-          .select('*')
-          .order('created_at', { ascending: false });
-        return allTasks || [];
+        return [];
       }
 
       // Filter assignments that match this kid and date
@@ -137,24 +133,16 @@ export async function fetchTasksForKid(kidId, date) {
         return matchesKid && matchesDate;
       });
 
-      // If no assignments found, show all tasks (fallback)
+      // If no assignments found, return empty array (no tasks to show)
       if (matchingAssignments.length === 0) {
-        const { data: allTasks } = await supabase
-          .from('tasks')
-          .select('*')
-          .order('created_at', { ascending: false });
-        return allTasks || [];
+        return [];
       }
 
       // Get unique task IDs from matching assignments
       const taskIds = [...new Set(matchingAssignments.map(a => a.task_id))];
       
       if (taskIds.length === 0) {
-        const { data: allTasks } = await supabase
-          .from('tasks')
-          .select('*')
-          .order('created_at', { ascending: false });
-        return allTasks || [];
+        return [];
       }
 
       // Fetch the actual tasks
@@ -176,12 +164,8 @@ export async function fetchTasksForKid(kidId, date) {
         };
       });
     } catch (err) {
-      // If anything fails, show all tasks as fallback
-      const { data: allTasks } = await supabase
-        .from('tasks')
-        .select('*')
-        .order('created_at', { ascending: false });
-      return allTasks || [];
+      // If anything fails, return empty array
+      return [];
     }
   }
   const res = await fetch(`${LOCAL_API}/tasks?kidId=${kidId}&date=${date}`);
