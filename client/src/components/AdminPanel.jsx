@@ -426,7 +426,7 @@ export default function AdminPanel({
         <div className="bubble-card p-6 bg-white flex flex-col justify-between">
           <div>
             <h3 className="text-xl font-bold text-indigo-950 mb-4 flex items-center gap-2">
-              <ListPlus className="text-indigo-600" /> Create Tasks
+              <ListPlus className="text-indigo-600" /> Manage Tasks
             </h3>
 
             {/* List of current tasks with delete option */}
@@ -439,14 +439,14 @@ export default function AdminPanel({
                   </div>
                   <button
                     onClick={() => {
-                      if (confirm(`Are you sure you want to delete the task: "${task.title}"?`)) {
+                      if (confirm(`Are you sure you want to permanently delete the task: "${task.title}"? This will remove it from all kids.`)) {
                         onDeleteTask(task.id);
                       }
                     }}
-                    className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
-                    title="Delete task"
+                    className="px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200 transition-colors"
+                    title="Delete this task permanently"
                   >
-                    <Trash2 size={18} />
+                    Delete
                   </button>
                 </div>
               ))}
