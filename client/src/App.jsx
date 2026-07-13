@@ -34,6 +34,22 @@ export default function App() {
   const [activeKid, setActiveKid] = useState(null);
   const [activeTab, setActiveTab] = useState('deeds'); // 'deeds', 'leaderboard', 'hall', 'admin'
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem('jannah_auth') === 'true';
+  });
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const handlePasswordSubmit = (e) => {
+    e.preventDefault();
+    if (password === 'JannahGirls') {
+      setIsAuthenticated(true);
+      sessionStorage.setItem('jannah_auth', 'true');
+      setPasswordError('');
+    } else {
+      setPasswordError('Wrong password! Please try again.');
+    }
+  };
 
   // Load baseline data (kids, tasks, assignments, champions)
   const loadData = async () => {
@@ -213,6 +229,49 @@ export default function App() {
       <div className="flex flex-col items-center justify-center min-h-screen bg-jannah-cream text-indigo-950 font-bubble pb-20">
         <div className="text-4xl animate-bounce">🌟</div>
         <h2 className="text-xl font-bold mt-4">Loading Jannah Skies...</h2>
+        {/* Developer Footer - Fixed at bottom */}
+        <footer className="fixed bottom-0 left-0 right-0 text-center py-2 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-2 border-jannah-gold z-30">
+          <div className="text-xs text-white font-bubble">
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-jannah-gold">✨</span>
+              <span className="font-bold">Developed by Mir Muhammad Azmain Ahnaf</span>
+              <span className="text-jannah-gold">✨</span>
+            </div>
+            <div className="text-[10px] text-jannah-lavender">© 2026 Dream of Jannah</div>
+          </div>
+        </footer>
+      </div>
+    );
+  }
+
+  // Password gate - must authenticate before accessing the app
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-jannah-lavender-light to-jannah-cream flex flex-col items-center justify-center p-4 pb-20">
+        <div className="bubble-card p-8 bg-white max-w-md w-full text-center">
+          <div className="text-5xl mb-4">🔐</div>
+          <h2 className="text-2xl font-bold text-indigo-950 mb-2">Dream of Jannah</h2>
+          <p className="text-slate-500 text-sm mb-6">Enter password to access</p>
+
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            {passwordError && (
+              <div className="bg-orange-50 border-2 border-orange-200 text-orange-700 px-4 py-2 rounded-xl text-sm font-semibold">
+                {passwordError}
+              </div>
+            )}
+            <input
+              type="password"
+              placeholder="Enter password..."
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl border-2 border-jannah-lavender focus:outline-none focus:ring-4 focus:ring-jannah-lavender-light text-center text-lg font-bubble"
+              autoFocus
+            />
+            <button type="submit" className="w-full bubble-btn-sky text-sm">
+              Enter ✨
+            </button>
+          </form>
+        </div>
         {/* Developer Footer - Fixed at bottom */}
         <footer className="fixed bottom-0 left-0 right-0 text-center py-2 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-2 border-jannah-gold z-30">
           <div className="text-xs text-white font-bubble">
