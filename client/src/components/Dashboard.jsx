@@ -17,10 +17,14 @@ export default function Dashboard({ activeKid, tasks, completions, onToggleTask,
   // Filter tasks based on selected date
   const filteredTasks = tasks.filter(task => {
     if (task.assigned_date === null) return true;
-    // Normalize the assigned_date to YYYY-MM-DD format for comparison
+    // Normalize both dates to YYYY-MM-DD format for comparison
     const taskDate = task.assigned_date.split('T')[0];
-    return taskDate === selectedDate;
+    const matches = taskDate === selectedDate;
+    console.log('Task date check:', { taskTitle: task.title, taskDate, selectedDate, matches });
+    return matches;
   });
+  console.log('All tasks for kid:', tasks);
+  console.log('Filtered tasks for', selectedDate, ':', filteredTasks);
 
   useEffect(() => {
     const days = [];
