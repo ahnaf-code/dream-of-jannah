@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { getAvatar } from '../utils/avatars';
-import { Sparkles, Check, RefreshCw, ChevronLeft, Calendar, X } from 'lucide-react';
+import { Sparkles, Check, RefreshCw, ChevronLeft, Calendar } from 'lucide-react';
 
-export default function Dashboard({ activeKid, tasks, completions, onToggleTask, onLogOut, onDeleteTaskFromKid }) {
+export default function Dashboard({ activeKid, tasks, completions, onToggleTask, onLogOut }) {
   // Helper function to get local date string in YYYY-MM-DD format
   const getLocalDateString = (date = new Date()) => {
     const year = date.getFullYear();
@@ -214,29 +214,13 @@ export default function Dashboard({ activeKid, tasks, completions, onToggleTask,
                 </div>
               </div>
 
-              {/* Point badge and delete button */}
-              <div className="flex items-center gap-2">
-                <div className={`px-4 py-2 rounded-2xl font-black border-2 transition-all ${
-                  isCompleted 
-                    ? 'bg-jannah-mint border-jannah-mint-dark text-indigo-950' 
-                    : 'bg-jannah-gold border-jannah-gold-dark text-indigo-950 shadow-[2px_2px_0px_0px_#F9F871]'
-                }`}>
-                  +{task.points} 🌟
-                </div>
-                {onDeleteTaskFromKid && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (confirm(`Remove "${task.title}" from ${activeKid.name}'s list?`)) {
-                        onDeleteTaskFromKid(task.id, activeKid.id);
-                      }
-                    }}
-                    className="w-8 h-8 rounded-full bg-red-100 hover:bg-red-200 border-2 border-red-300 flex items-center justify-center text-red-600 transition-all hover:scale-110"
-                    title={`Remove from ${activeKid.name}`}
-                  >
-                    <X size={16} />
-                  </button>
-                )}
+              {/* Point badge */}
+              <div className={`px-4 py-2 rounded-2xl font-black border-2 transition-all ${
+                isCompleted 
+                  ? 'bg-jannah-mint border-jannah-mint-dark text-indigo-950' 
+                  : 'bg-jannah-gold border-jannah-gold-dark text-indigo-950 shadow-[2px_2px_0px_0px_#F9F871]'
+              }`}>
+                +{task.points} 🌟
               </div>
             </div>
           );
