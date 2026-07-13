@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jannah-v4';
+const CACHE_NAME = 'jannah-v5';
 const ASSETS = [
   '/',
   '/index.html',
