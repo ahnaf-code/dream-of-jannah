@@ -171,6 +171,29 @@ export default function App() {
     }
   };
 
+  // Handles deleting a task from a specific kid's list
+  const handleDeleteTaskFromKid = async (taskId, kidId) => {
+    try {
+      // Find the assignment that matches this task and kid
+      const assignment = assignments.find(a => 
+        a.task_id === taskId && 
+        (a.kid_id === kidId || a.kid_id === null)
+      );
+      
+      if (assignment) {
+        await deleteAssignment(assignment.id);
+        setAssignments(prev => prev.filter(a => a.id !== assignment.id));
+        
+        // Refresh kid tasks
+        const todayStr = getLocalDateString();
+        const updatedTasks = await fetchTasksForKid(kidId, todayStr);
+        setKidTasks(updatedTasks);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   // Handles toggling task completion status
   const handleToggleTask = async (kidId, taskId, date) => {
     try {
@@ -244,7 +267,8 @@ export default function App() {
             tasks={kidTasks} 
             completions={completions} 
             onToggleTask={handleToggleTask} 
-            onLogOut={() => setActiveKid(null)} 
+            onLogOut={() => setActiveKid(null)}
+            onDeleteTaskFromKid={handleDeleteTaskFromKid}
           />
         )}
         {activeTab === 'leaderboard' && (
