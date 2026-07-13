@@ -273,46 +273,76 @@ export default function AdminPanel({
           </button>
         </form>
 
-        {/* Existing Assignments */}
+        {/* Existing Assignments - Organized by Task */}
         <div className="border-t border-indigo-200 pt-4">
           <h4 className="text-sm font-bold text-indigo-950 mb-3">Current Assignments:</h4>
-          <div className="space-y-2 max-h-60 overflow-y-auto">
-            {assignments && assignments.length > 0 ? (
-              assignments.map(assignment => {
-                const task = tasks.find(t => t.id === assignment.task_id);
-                const kid = kids.find(k => k.id === assignment.kid_id);
-                const av = kid ? (AVATARS.find(a => a.id === kid.avatar) || AVATARS[0]) : null;
-                
+          {assignments && assignments.length > 0 ? (
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {/* Group assignments by task */}
+              {tasks.map(task => {
+                const taskAssignments = assignments.filter(a => a.task_id === task.id);
+                if (taskAssignments.length === 0) return null;
+
                 return (
-                  <div key={assignment.id} className="flex items-center justify-between p-2.5 bg-white border border-indigo-100 rounded-xl">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-800 truncate">{task?.title || 'Unknown Task'}</p>
-                      <div className="flex gap-2 mt-1">
-                        <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">
-                          {kid ? `${av.emoji} ${kid.name}` : '👥 All Kids'}
-                        </span>
-                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-semibold">
-                          {assignment.assigned_date ? `📅 ${assignment.assigned_date}` : '🔄 Daily'}
-                        </span>
+                  <div key={task.id} className="bg-white border-2 border-indigo-100 rounded-xl p-3">
+                    {/* Task Header */}
+                    <div className="flex items-center justify-between mb-2 pb-2 border-b border-indigo-50">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-indigo-950 truncate">{task.title}</p>
+                        <span className="text-xs bg-jannah-gold px-2 py-0.5 rounded-full font-black text-indigo-950">+{task.points} ⭐</span>
                       </div>
+                      <button
+                        onClick={() => {
+                          if (confirm(`Delete "${task.title}" from ALL kids? This will remove all assignments for this task.`)) {
+                            taskAssignments.forEach(a => onDeleteAssignment(a.id));
+                          }
+                        }}
+                        className="ml-2 px-3 py-1 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200 transition-colors"
+                        title="Delete from all kids"
+                      >
+                        Delete All
+                      </button>
                     </div>
-                    <button
-                      onClick={() => {
-                        if (confirm('Remove this assignment?')) {
-                          onDeleteAssignment(assignment.id);
-                        }
-                      }}
-                      className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors ml-2"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+
+                    {/* Assignments for this task */}
+                    <div className="space-y-1.5">
+                      {taskAssignments.map(assignment => {
+                        const kid = kids.find(k => k.id === assignment.kid_id);
+                        const av = kid ? (AVATARS.find(a => a.id === kid.avatar) || AVATARS[0]) : null;
+                        
+                        return (
+                          <div key={assignment.id} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                            <div className="flex-1 flex items-center gap-2">
+                              <span className="text-xs font-semibold text-slate-700">
+                                {kid ? `${av.emoji} ${kid.name}` : '👥 All Kids'}
+                              </span>
+                              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-semibold">
+                                {assignment.assigned_date ? `📅 ${assignment.assigned_date}` : '🔄 Daily'}
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => {
+                                const target = kid ? kid.name : 'all kids';
+                                if (confirm(`Remove "${task.title}" from ${target}?`)) {
+                                  onDeleteAssignment(assignment.id);
+                                }
+                              }}
+                              className="p-1 text-slate-400 hover:text-red-500 rounded hover:bg-red-50 transition-colors"
+                              title={`Remove from ${kid ? kid.name : 'all kids'}`}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 );
-              })
-            ) : (
-              <p className="text-xs text-slate-400 italic">No assignments yet. Create one above!</p>
-            )}
-          </div>
+              })}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-400 italic">No assignments yet. Create one above!</p>
+          )}
         </div>
       </div>
 
