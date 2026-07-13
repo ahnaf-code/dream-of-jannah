@@ -94,12 +94,18 @@ export async function deleteTask(id) {
 // =====================================================
 export async function fetchAssignments() {
   if (isSupabase) {
-    const { data, error } = await supabase
-      .from('task_assignments')
-      .select('*, tasks(title, points)')
-      .order('created_at', { ascending: false });
-    if (error) throw new Error(error.message);
-    return data;
+    try {
+      const { data, error } = await supabase
+        .from('task_assignments')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      // If table doesn't exist, return empty array
+      if (error || !data) return [];
+      return data;
+    } catch (err) {
+      return [];
+    }
   }
   const res = await fetch(`${LOCAL_API}/assignments`);
   if (!res.ok) throw new Error('Failed to fetch assignments');
@@ -108,46 +114,75 @@ export async function fetchAssignments() {
 
 export async function fetchTasksForKid(kidId, date) {
   if (isSupabase) {
-    // Fetch ALL assignments and filter client-side (more reliable for small datasets)
-    const { data, error } = await supabase
-      .from('task_assignments')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) throw new Error(error.message);
-    if (!data) return [];
+    try {
+      // Try to fetch assignments first
+      const { data: assignments, error } = await supabase
+        .from('task_assignments')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      // If table doesn't exist or error, fall back to showing all tasks
+      if (error || !assignments) {
+        const { data: allTasks } = await supabase
+          .from('tasks')
+          .select('*')
+          .order('created_at', { ascending: false });
+        return allTasks || [];
+      }
 
-    // Filter assignments that match this kid and date
-    const matchingAssignments = data.filter(a => {
-      const matchesKid = a.kid_id === null || a.kid_id === kidId;
-      const matchesDate = a.assigned_date === null || a.assigned_date === date;
-      return matchesKid && matchesDate;
-    });
+      // Filter assignments that match this kid and date
+      const matchingAssignments = assignments.filter(a => {
+        const matchesKid = a.kid_id === null || a.kid_id === kidId;
+        const matchesDate = a.assigned_date === null || a.assigned_date === date;
+        return matchesKid && matchesDate;
+      });
 
-    // Get unique task IDs from matching assignments
-    const taskIds = [...new Set(matchingAssignments.map(a => a.task_id))];
-    
-    if (taskIds.length === 0) return [];
+      // If no assignments found, show all tasks (fallback)
+      if (matchingAssignments.length === 0) {
+        const { data: allTasks } = await supabase
+          .from('tasks')
+          .select('*')
+          .order('created_at', { ascending: false });
+        return allTasks || [];
+      }
 
-    // Fetch the actual tasks
-    const { data: tasks, error: tasksError } = await supabase
-      .from('tasks')
-      .select('*')
-      .in('id', taskIds);
-    
-    if (tasksError) throw new Error(tasksError.message);
-    if (!tasks) return [];
+      // Get unique task IDs from matching assignments
+      const taskIds = [...new Set(matchingAssignments.map(a => a.task_id))];
+      
+      if (taskIds.length === 0) {
+        const { data: allTasks } = await supabase
+          .from('tasks')
+          .select('*')
+          .order('created_at', { ascending: false });
+        return allTasks || [];
+      }
 
-    // Return tasks with assignment metadata
-    return tasks.map(task => {
-      const assignment = matchingAssignments.find(a => a.task_id === task.id);
-      return { 
-        ...task, 
-        assignment_id: assignment?.id, 
-        assigned_kid_id: assignment?.kid_id, 
-        assigned_date: assignment?.assigned_date 
-      };
-    });
+      // Fetch the actual tasks
+      const { data: tasks } = await supabase
+        .from('tasks')
+        .select('*')
+        .in('id', taskIds);
+      
+      if (!tasks) return [];
+
+      // Return tasks with assignment metadata
+      return tasks.map(task => {
+        const assignment = matchingAssignments.find(a => a.task_id === task.id);
+        return { 
+          ...task, 
+          assignment_id: assignment?.id, 
+          assigned_kid_id: assignment?.kid_id, 
+          assigned_date: assignment?.assigned_date 
+        };
+      });
+    } catch (err) {
+      // If anything fails, show all tasks as fallback
+      const { data: allTasks } = await supabase
+        .from('tasks')
+        .select('*')
+        .order('created_at', { ascending: false });
+      return allTasks || [];
+    }
   }
   const res = await fetch(`${LOCAL_API}/tasks?kidId=${kidId}&date=${date}`);
   if (!res.ok) throw new Error('Failed to fetch tasks');
