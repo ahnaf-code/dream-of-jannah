@@ -211,8 +211,20 @@ export default function App() {
   if (loading && kids.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-jannah-cream text-indigo-950 font-bubble">
-        <div className="text-4xl animate-bounce">🌟</div>
-        <h2 className="text-xl font-bold mt-4">Loading Jannah Skies...</h2>
+        <div className="flex-grow flex flex-col items-center justify-center">
+          <div className="text-4xl animate-bounce">🌟</div>
+          <h2 className="text-xl font-bold mt-4">Loading Jannah Skies...</h2>
+        </div>
+        <footer className="text-center py-4 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-4 border-jannah-gold w-full">
+          <div className="text-sm text-white font-bubble">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <span className="text-jannah-gold">✨</span>
+              <span className="font-bold">Developed by Mir Muhammad Azmain Ahnaf</span>
+              <span className="text-jannah-gold">✨</span>
+            </div>
+            <div className="text-xs text-jannah-lavender">© 2026 Dream of Jannah</div>
+          </div>
+        </footer>
       </div>
     );
   }
@@ -220,15 +232,27 @@ export default function App() {
   // If no kid profile is selected yet, show the beautiful Kid Selector dashboard
   if (!activeKid) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-jannah-lavender-light to-jannah-cream pb-12">
-        <KidSelector 
-          kids={kids} 
-          onSelectKid={(kid) => {
-            setActiveKid(kid);
-            setActiveTab('deeds');
-          }} 
-          onAddKid={handleAddKid} 
-        />
+      <div className="min-h-screen bg-gradient-to-b from-jannah-lavender-light to-jannah-cream pb-12 flex flex-col">
+        <div className="flex-grow">
+          <KidSelector 
+            kids={kids} 
+            onSelectKid={(kid) => {
+              setActiveKid(kid);
+              setActiveTab('deeds');
+            }} 
+            onAddKid={handleAddKid} 
+          />
+        </div>
+        <footer className="text-center py-4 mt-8 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-4 border-jannah-gold">
+          <div className="text-sm text-white font-bubble">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <span className="text-jannah-gold">✨</span>
+              <span className="font-bold">Developed by Mir Muhammad Azmain Ahnaf</span>
+              <span className="text-jannah-gold">✨</span>
+            </div>
+            <div className="text-xs text-jannah-lavender">© 2026 Dream of Jannah</div>
+          </div>
+        </footer>
       </div>
     );
   }
@@ -269,9 +293,16 @@ export default function App() {
         )}
       </main>
 
-      {/* Developer Copyright Footer */}
-      <footer className="text-center py-3 mb-20 text-xs text-slate-400 font-bubble select-none">
-        &copy; 2026 Mir Muhammad Azmain Ahnaf. Developed by <span className="font-bold text-slate-500">Mir Muhammad Azmain Ahnaf</span>
+      {/* Developer Copyright Footer - Eye-catching design */}
+      <footer className="text-center py-4 mb-20 bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-900 border-t-4 border-jannah-gold">
+        <div className="text-sm text-white font-bubble">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <span className="text-jannah-gold">✨</span>
+            <span className="font-bold">Developed by Mir Muhammad Azmain Ahnaf</span>
+            <span className="text-jannah-gold">✨</span>
+          </div>
+          <div className="text-xs text-jannah-lavender">© 2026 Dream of Jannah</div>
+        </div>
       </footer>
 
       {/* Floating Bottom Bubbly Navigation Bar (Highly Kid-Friendly and Thumb-Optimized) */}
