@@ -14,6 +14,14 @@ export default function Dashboard({ activeKid, tasks, completions, onToggleTask,
   const [selectedDate, setSelectedDate] = useState(() => getLocalDateString());
   const [weekDays, setWeekDays] = useState([]);
 
+  // Filter tasks based on selected date
+  const filteredTasks = tasks.filter(task => {
+    // If task has no assigned_date (null), it's a recurring daily task - show on all dates
+    if (task.assigned_date === null) return true;
+    // Otherwise, only show if it matches the selected date
+    return task.assigned_date === selectedDate;
+  });
+
   useEffect(() => {
     const days = [];
     const today = new Date();
@@ -137,7 +145,7 @@ export default function Dashboard({ activeKid, tasks, completions, onToggleTask,
 
       {/* Checklist Grid */}
       <div className="space-y-4">
-        {[...tasks].sort((a, b) => {
+        {[...filteredTasks].sort((a, b) => {
           const aCompleted = completions.some(c => c.task_id === a.id && c.completed_date === selectedDate);
           const bCompleted = completions.some(c => c.task_id === b.id && c.completed_date === selectedDate);
           if (aCompleted && !bCompleted) return 1;
@@ -188,9 +196,9 @@ export default function Dashboard({ activeKid, tasks, completions, onToggleTask,
           );
         })}
 
-        {tasks.length === 0 && (
+        {filteredTasks.length === 0 && (
           <div className="text-center p-12 bubble-card border-dashed border-jannah-periwinkle-dark">
-            <p className="text-lg text-jannah-lavender font-bold">No tasks assigned yet! Ask Ahnaf to add your good deeds list! ✨</p>
+            <p className="text-lg text-jannah-lavender font-bold">No tasks for this date! ✨</p>
           </div>
         )}
       </div>
